@@ -2,7 +2,7 @@ name: Build "THE LAHORE ACADAMY JHANG" Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -16,15 +16,8 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
-
-      - name: Setup Flutter SDK
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.x'
-          channel: 'stable'
-          cache: true
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
@@ -40,7 +33,7 @@ jobs:
 
       - name: Compile Android APK
         run: |
-          flet build apk --project the_lahore_academy_jhang --org com.thelahoreacademy.jhang --product "THE LAHORE ACADAMY JHANG"
+          yes | flet build apk --project the_lahore_academy_jhang --org com.thelahoreacademy.jhang --product "THE LAHORE ACADAMY JHANG"
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
