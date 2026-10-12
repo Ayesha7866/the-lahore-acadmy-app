@@ -1,13 +1,9 @@
+
 """
 main.py
 -------
-Academy Management & WhatsApp Automation Mobile App (Flet Framework)
-Designed for Academy Admin/Owner:
-- Client Communication: 100% Free direct WhatsApp dispatch via mobile deep-links & Web QR session.
-- Student Online Tests: Web exam links sent to students via WhatsApp with zero app install needed.
-- Auto-Grading: Instant MCQs + Google Gemini AI short answer evaluation.
-- Payment Gateways: Embedded JazzCash, EasyPaisa, and Bank details in fee reminders.
-- Packaging: Ready for 'flet build apk' Android compilation.
+Academy Management & WhatsApp Automation Mobile App
+Flet Framework
 """
 
 import threading
@@ -30,47 +26,65 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
 
-    # Initialize Database & Seed demo data if first run
+    # Initialize Database
     init_db()
     seed_mobile_database()
 
-    # Start Quiz Web Server daemon in background so students can take tests via WhatsApp links
+    # Start Quiz Web Server
     try:
-        start_quiz_server_thread(host="0.0.0.0", port=8000)
+        start_quiz_server_thread(
+            host="0.0.0.0",
+            port=8000,
+        )
     except Exception as e:
         print(f"Quiz server warning: {e}")
 
-    # App Bar (Header at top of screen)
+    # Load Academy Settings
     settings = FeeService.get_settings()
+
+    # App Bar
     page.app_bar = ft.AppBar(
-        leading=ft.Icon(ft.Icons.SCHOOL, color=ft.Colors.BLUE_400),
-        title=ft.Text(settings.academy_name or "THE LAHORE ACADAMY JHANG", size=16, weight=ft.FontWeight.BOLD),
-        bgcolor=ft.Colors.GREY_950,
+        leading=ft.Icon(
+            ft.Icons.SCHOOL,
+            color=ft.Colors.BLUE_400,
+        ),
+        title=ft.Text(
+            settings.academy_name or "THE LAHORE ACADAMY JHANG",
+            size=16,
+            weight=ft.FontWeight.BOLD,
+        ),
+        bgcolor=ft.Colors.GREY_900,
         center_title=False,
     )
 
-    # Views dictionary for bottom navigation
+    # Main Content Area
     content_area = ft.Container(expand=True)
 
+    # Load Selected Tab
     def load_tab(index: int):
         if index == 0:
             content_area.content = create_student_view(page)
+
         elif index == 1:
             content_area.content = create_fee_view(page)
+
         elif index == 2:
             content_area.content = create_test_view(page)
+
         elif index == 3:
             content_area.content = create_reports_view(page)
+
         page.update()
 
+    # Navigation Change Handler
     def on_nav_change(e):
         load_tab(e.control.selected_index)
 
-    # Bottom Navigation Bar (Material 3 Native Mobile Navigation)
+    # Bottom Navigation Bar
     page.navigation_bar = ft.NavigationBar(
         selected_index=0,
         on_change=on_nav_change,
-        bgcolor=ft.Colors.GREY_950,
+        bgcolor=ft.Colors.GREY_900,
         destinations=[
             ft.NavigationBarDestination(
                 icon=ft.Icons.PEOPLE_OUTLINE,
@@ -95,8 +109,10 @@ def main(page: ft.Page):
         ],
     )
 
-    # Initial view load
+    # Initial View
     load_tab(0)
+
+    # Add Content
     page.add(content_area)
 
 
